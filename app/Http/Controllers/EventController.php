@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\EventRequest;
 use App\Models\Event;
 use Illuminate\Http\Request;
 
@@ -14,24 +15,16 @@ class EventController extends Controller
         return response()->json($events);
     }
 
-    public function store(Request $request)
+    public function store(EventRequest $request)
     {
-        $request->validate([
-            'name' => 'required',
-            'description' => 'required',
-            'status' => 'required',
-            'location' => 'required',
-            'tickets_available' => 'required|numeric',
-            'price' => 'required|decimal:2',
-            'registration_starts_at' => 'required|date',
-            'registration_ends_at' => 'required|date',
-            'starts_at' => 'required|date',
-            'ends_at' => 'required|date',
-        ]);
+       $validated = $request->validated();
 
         $event = Event::create($request->all());
 
-        return response()->json($event, 201);
+        return response()->json([
+            'message' => 'Event created successfully',
+            'event' => $event
+        ], 201);
     }
 
     public function show($id)
@@ -43,20 +36,9 @@ class EventController extends Controller
         ]);
     }
 
-    public function update(Request $request, $id)
+    public function update(EventRequest $request, $id)
     {
-        $request->validate([
-            // 'name' => 'required',
-            // 'description' => 'required',
-            // 'status' => 'required',
-            // 'location' => 'required',
-            // 'tickets_available' => 'required|numeric',
-            // 'price' => 'required|decimal:2',
-            // 'registration_starts_at' => 'required|date',
-            // 'registration_ends_at' => 'required|date',
-            // 'starts_at' => 'required|date',
-            // 'ends_at' => 'required|date',
-        ]);
+        $validated = $request->validated();
 
         $event = Event::findOrFail($id);
         $event->update($request->all());
