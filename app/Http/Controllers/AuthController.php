@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
+use PHPOpenSourceSaver\JWTAuth\Facades\JWTFactory;
 
 class AuthController extends Controller
 {
@@ -39,6 +41,15 @@ class AuthController extends Controller
                     'type' => 'bearer',
                 ]
             ]);
+
+        // $user = Auth::attempt($credentials);
+
+        // Laravel Sanctum Example
+        // $user = User::where('email', $credentials['email'])->first();
+        // $token = $user->createToken($user->name.'-AuthToken')->plainTextToken;
+        // return response()->json([
+        //     'access_token' => $token,
+        // ]);
 
     }
 
@@ -86,5 +97,11 @@ class AuthController extends Controller
                 'type' => 'bearer',
             ]
         ]);
+    }
+
+    public function generateToken()
+    {
+        $token = auth()->claims(['foo' => 'bar'])->tokenById(1);
+        return response()->json(['token' => $token]);
     }
 }
