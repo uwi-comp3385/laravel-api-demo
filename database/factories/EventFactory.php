@@ -17,12 +17,14 @@ class EventFactory extends Factory
     public function definition(): array
     {
         $registrationStartsAt = fake()->dateTimeBetween('-1 week', '+1 week');
-        $registratoinEndsAt = $registrationStartsAt->modify('+1 month');
+        $registrationStartsAtClone = clone $registrationStartsAt;
+        $registratoinEndsAt = $registrationStartsAtClone->modify('+1 month');
         $eventStartsAt = fake()->dateTimeBetween('+4 months', '+12 months');
-        $eventEndsAt = $eventStartsAt->modify('+3 days');
+        $eventStartsAtClone = clone $eventStartsAt;
+        $eventEndsAt = $eventStartsAtClone->modify('+3 days');
 
         return [
-            'name' => fake()->text(10),
+            'name' => fake()->sentence(6, true),
             'description' => fake()->paragraph(4),
             'location' => fake()->address(),
             'status' => fake()->randomElement(['draft', 'active', 'cancelled', 'completed']),
