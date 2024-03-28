@@ -22,3 +22,6 @@ Route::get('/about', function () {
 });
 
 // Create additional Routes below
+Route::get('/demo', function () {
+    return view('demo');
+});
