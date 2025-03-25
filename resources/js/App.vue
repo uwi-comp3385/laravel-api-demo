@@ -13,7 +13,7 @@ onMounted(async () => {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            email: 'beer.elva@example.net',
+            email: 'test@example.com',
             password: 'password'
         })
     }).then((response) => {
