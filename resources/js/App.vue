@@ -3,7 +3,7 @@ import { ref, onMounted } from 'vue';
 import Welcome from './components/Welcome.vue';
 import Events from './components/Events.vue';
 
-const fullname = ref('Yannick');
+const fullname = ref('Luke');
 
 onMounted(async () => {
     // get API token
@@ -13,7 +13,7 @@ onMounted(async () => {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            email: 'moshe.jaskolski@example.net',
+            email: 'beer.elva@example.net',
             password: 'password'
         })
     }).then((response) => {

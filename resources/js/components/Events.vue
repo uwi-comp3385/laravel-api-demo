@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue';
+import { format } from 'date-fns';
 
 const events = ref([]);
 
@@ -24,11 +25,13 @@ onMounted(() => {
 <h2 class="mb-5">Events</h2>
 <div class="container">
     <div class="events row gx-4 gy-5">
-        <div class="card col-md-4" v-for="event in events">
-            <div class="card-body">
-                <h3>{{ event.name }}</h3>
-                <p>{{ event.starts_at }} to {{ event.ends_at }}</p>
-                <p>{{ event.description }}</p>
+        <div class="col-md-4" v-for="event in events" :key="event.id">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title">{{ event.name }}</h3>
+                    <p class="text-secondary">{{ format(event.starts_at, 'MMM d, yyyy hh:mm a') }} to {{ format(event.ends_at, 'MMM d, yyyy hh:mm a') }}</p>
+                    <p class="card-text">{{ event.description }}</p>
+                </div>
             </div>
         </div>
     </div>
