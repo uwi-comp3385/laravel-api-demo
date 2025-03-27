@@ -1,10 +1,10 @@
 <?php
 
+use App\Http\Controllers\Api\V1\EventController;
+use App\Http\Controllers\AuthController;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use \App\Http\Controllers\AuthController;
-use \App\Http\Controllers\Api\V1\EventController;
-use \App\Models\User;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,11 +21,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('login', fn() => response()->json(['message' => 'Token invalid or missing.'], 401))->name('login');
+Route::get('login', fn () => response()->json(['message' => 'Token invalid or missing.'], 401))->name('login');
 Route::post('login', [AuthController::class, 'login'])->name('login');
 Route::post('generate-token', [AuthController::class, 'generateToken'])->name('generate-token')->withoutMiddleware('auth:api');
 
-Route::get('users', fn() => User::all())->middleware('auth:api');
+Route::get('users', fn () => User::all())->middleware('auth:api');
 
 Route::middleware(['auth:api'])->prefix('v1')->group(function () {
     Route::get('events', [EventController::class, 'index']);

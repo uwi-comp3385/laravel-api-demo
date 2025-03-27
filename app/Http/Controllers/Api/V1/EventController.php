@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EventRequest;
 use App\Models\Event;
-use Illuminate\Http\Request;
 
 class EventController extends Controller
 {
@@ -18,13 +17,13 @@ class EventController extends Controller
 
     public function store(EventRequest $request)
     {
-       $validated = $request->validated();
+        $validated = $request->validated();
 
         $event = Event::create($request->all());
 
         return response()->json([
             'message' => 'Event created successfully',
-            'event' => $event
+            'event' => $event,
         ], 201);
     }
 
@@ -33,7 +32,7 @@ class EventController extends Controller
         $event = Event::findOrFail($id);
 
         return response()->json([
-            'event' => $event
+            'event' => $event,
         ]);
     }
 
@@ -46,7 +45,7 @@ class EventController extends Controller
 
         return response()->json([
             'message' => 'Event updated successfully',
-            'event' => $event
+            'event' => $event,
         ]);
     }
 
@@ -56,7 +55,7 @@ class EventController extends Controller
         $event->delete();
 
         return response()->json([
-            'message' => 'Event deleted successfully'
+            'message' => 'Event deleted successfully',
         ], 204);
     }
 }

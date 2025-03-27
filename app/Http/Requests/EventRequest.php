@@ -12,7 +12,7 @@ class EventRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true; //Auth::check();
+        return true; // Auth::check();
     }
 
     /**
@@ -22,7 +22,7 @@ class EventRequest extends FormRequest
      */
     public function rules(): array
     {
-        return ([
+        return [
             'name' => 'required',
             'description' => 'required',
             'status' => 'required',
@@ -33,6 +33,6 @@ class EventRequest extends FormRequest
             'registration_ends_at' => 'required|date',
             'starts_at' => 'required|date',
             'ends_at' => 'required|date',
-        ]);
+        ];
     }
 }
