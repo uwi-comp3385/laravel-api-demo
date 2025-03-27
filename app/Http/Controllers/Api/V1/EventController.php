@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EventRequest;
+use App\Http\Resources\EventCollection;
+use App\Http\Resources\EventResource;
 use App\Models\Event;
 
 class EventController extends Controller
@@ -13,13 +15,16 @@ class EventController extends Controller
         $events = Event::all();
 
         return response()->json($events);
+
+        // or you can create and use a Resource Collection
+        // return new EventCollection($events);
     }
 
     public function store(EventRequest $request)
     {
         $validated = $request->validated();
 
-        $event = Event::create($request->all());
+        $event = Event::create($validated);
 
         return response()->json([
             'message' => 'Event created successfully',
@@ -34,6 +39,9 @@ class EventController extends Controller
         return response()->json([
             'event' => $event,
         ]);
+
+        // or you can create and use a Resource
+        // return new EventResource($event);
     }
 
     public function update(EventRequest $request, $id)
@@ -41,7 +49,7 @@ class EventController extends Controller
         $validated = $request->validated();
 
         $event = Event::findOrFail($id);
-        $event->update($request->all());
+        $event->update($validated);
 
         return response()->json([
             'message' => 'Event updated successfully',
