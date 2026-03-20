@@ -131,10 +131,23 @@ class AuthController extends Controller
 
     // -------------------------------------------------------------------------
 
-    public function generateToken()
+    /**
+     * Demonstrates JWT custom claims — extra data embedded directly in the token payload.
+     * Useful for encoding roles, permissions, or other data the API needs without a DB lookup.
+     */
+    public function tokenWithClaims(): JsonResponse
     {
-        $token = auth()->claims(['foo' => 'bar'])->tokenById(1);
+        $user = Auth::user();
 
-        return response()->json(['token' => $token]);
+        $token = auth()->claims(['role' => 'admin', 'name' => $user->name])->fromUser($user);
+
+        return response()->json([
+            'status' => 'success',
+            'user' => $user,
+            'authorisation' => [
+                'token' => $token,
+                'type' => 'bearer',
+            ],
+        ]);
     }
 }

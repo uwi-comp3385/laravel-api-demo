@@ -27,7 +27,6 @@ Route::get('login', fn () => response()->json(['message' => 'Token invalid or mi
 // JWT Auth routes
 Route::post('login', [AuthController::class, 'login']);
 Route::post('register', [AuthController::class, 'register']);
-Route::post('generate-token', [AuthController::class, 'generateToken']);
 
 // Sanctum Auth routes
 Route::post('sanctum/login', [AuthController::class, 'sanctumLogin']);
@@ -36,6 +35,7 @@ Route::middleware('auth:sanctum')->post('sanctum/logout', [AuthController::class
 Route::middleware('auth:api')->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('refresh', [AuthController::class, 'refresh']);
+    Route::post('token-with-claims', [AuthController::class, 'tokenWithClaims']);
 
     Route::get('users', fn () => User::all());
 
