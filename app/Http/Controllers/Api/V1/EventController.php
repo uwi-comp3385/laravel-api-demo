@@ -14,47 +14,41 @@ class EventController extends Controller
     {
         $events = Event::all();
 
-        return response()->json($events);
+        return new EventCollection($events);
 
-        // or you can create and use a Resource Collection
-        // return new EventCollection($events);
+        // Without a Resource Collection:
+        // return response()->json($events);
     }
 
     public function store(EventRequest $request)
     {
-        $validated = $request->validated();
+        $event = Event::create($request->validated());
 
-        $event = Event::create($validated);
+        return (new EventResource($event))->response()->setStatusCode(201);
 
-        return response()->json([
-            'message' => 'Event created successfully',
-            'event' => $event,
-        ], 201);
+        // Without a Resource:
+        // return response()->json(['message' => 'Event created successfully', 'event' => $event], 201);
     }
 
     public function show($id)
     {
         $event = Event::findOrFail($id);
 
-        return response()->json([
-            'event' => $event,
-        ]);
+        return new EventResource($event);
 
-        // or you can create and use a Resource
-        // return new EventResource($event);
+        // Without a Resource:
+        // return response()->json(['event' => $event]);
     }
 
     public function update(EventRequest $request, $id)
     {
-        $validated = $request->validated();
-
         $event = Event::findOrFail($id);
-        $event->update($validated);
+        $event->update($request->validated());
 
-        return response()->json([
-            'message' => 'Event updated successfully',
-            'event' => $event,
-        ]);
+        return new EventResource($event);
+
+        // Without a Resource:
+        // return response()->json(['message' => 'Event updated successfully', 'event' => $event]);
     }
 
     public function destroy($id)
