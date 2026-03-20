@@ -21,18 +21,27 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+// Unauthenticated requests that hit auth:api middleware get redirected here
 Route::get('login', fn () => response()->json(['message' => 'Token invalid or missing.'], 401))->name('login');
-Route::post('login', [AuthController::class, 'login'])->name('login');
-Route::post('generate-token', [AuthController::class, 'generateToken'])->name('generate-token')->withoutMiddleware('auth:api');
 
-Route::get('users', fn () => User::all())->middleware('auth:api');
+// JWT Auth routes
+Route::post('login', [AuthController::class, 'login']);
+Route::post('register', [AuthController::class, 'register']);
+Route::post('generate-token', [AuthController::class, 'generateToken']);
 
-Route::middleware(['auth:api'])->prefix('v1')->group(function () {
-    Route::get('events', [EventController::class, 'index']);
-    Route::post('events', [EventController::class, 'store']);
-    Route::get('events/{id}', [EventController::class, 'show']);
-    Route::put('events/{id}', [EventController::class, 'update']);
-    Route::delete('events/{id}', [EventController::class, 'destroy']);
+Route::middleware('auth:api')->group(function () {
+    Route::post('logout', [AuthController::class, 'logout']);
+    Route::post('refresh', [AuthController::class, 'refresh']);
+
+    Route::get('users', fn () => User::all());
+
+    Route::prefix('v1')->group(function () {
+        Route::get('events', [EventController::class, 'index']);
+        Route::post('events', [EventController::class, 'store']);
+        Route::get('events/{id}', [EventController::class, 'show']);
+        Route::put('events/{id}', [EventController::class, 'update']);
+        Route::delete('events/{id}', [EventController::class, 'destroy']);
+    });
 });
 
 // or you could generate a CRUD API routes
