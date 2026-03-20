@@ -3,13 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-
     public function login(Request $request)
     {
         $request->validate([
@@ -36,16 +36,6 @@ class AuthController extends Controller
                 'type' => 'bearer',
             ],
         ]);
-
-        // $user = Auth::attempt($credentials);
-
-        // Laravel Sanctum Example
-        // $user = User::where('email', $credentials['email'])->first();
-        // $token = $user->createToken($user->name.'-AuthToken')->plainTextToken;
-        // return response()->json([
-        //     'access_token' => $token,
-        // ]);
-
     }
 
     public function register(Request $request)
@@ -96,6 +86,50 @@ class AuthController extends Controller
             ],
         ]);
     }
+
+    // -------------------------------------------------------------------------
+    // Sanctum: uses database-stored personal access tokens
+    // -------------------------------------------------------------------------
+
+    public function sanctumLogin(Request $request): JsonResponse
+    {
+        $request->validate([
+            'email' => 'required|string|email',
+            'password' => 'required|string',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (! $user || ! Hash::check($request->password, $user->password)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Unauthorized',
+            ], 401);
+        }
+
+        $token = $user->createToken($user->name.'-AuthToken')->plainTextToken;
+
+        return response()->json([
+            'status' => 'success',
+            'user' => $user,
+            'authorisation' => [
+                'token' => $token,
+                'type' => 'bearer',
+            ],
+        ]);
+    }
+
+    public function sanctumLogout(Request $request): JsonResponse
+    {
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Successfully logged out',
+        ]);
+    }
+
+    // -------------------------------------------------------------------------
 
     public function generateToken()
     {

@@ -29,6 +29,10 @@ Route::post('login', [AuthController::class, 'login']);
 Route::post('register', [AuthController::class, 'register']);
 Route::post('generate-token', [AuthController::class, 'generateToken']);
 
+// Sanctum Auth routes
+Route::post('sanctum/login', [AuthController::class, 'sanctumLogin']);
+Route::middleware('auth:sanctum')->post('sanctum/logout', [AuthController::class, 'sanctumLogout']);
+
 Route::middleware('auth:api')->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('refresh', [AuthController::class, 'refresh']);
