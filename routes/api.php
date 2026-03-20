@@ -28,16 +28,10 @@ Route::get('login', fn () => response()->json(['message' => 'Token invalid or mi
 Route::post('login', [AuthController::class, 'login']);
 Route::post('register', [AuthController::class, 'register']);
 
-// Sanctum Auth routes
-Route::post('sanctum/login', [AuthController::class, 'sanctumLogin']);
-Route::middleware('auth:sanctum')->post('sanctum/logout', [AuthController::class, 'sanctumLogout']);
-
 Route::middleware('auth:api')->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('refresh', [AuthController::class, 'refresh']);
     Route::post('token-with-claims', [AuthController::class, 'tokenWithClaims']);
-
-    Route::get('users', fn () => User::all());
 
     Route::prefix('v1')->group(function () {
         Route::get('events', [EventController::class, 'index']);
@@ -50,3 +44,14 @@ Route::middleware('auth:api')->group(function () {
 
 // or you could generate a CRUD API routes
 // Route::apiResource('v1/events', EventController::class)->middleware('auth:api');
+
+
+// Sanctum Auth routes
+Route::post('sanctum/login', [AuthController::class, 'sanctumLogin']);
+Route::middleware('auth:sanctum')->group(function() {
+    Route::post('sanctum/logout', [AuthController::class, 'sanctumLogout']);
+
+    Route::group(['prefix' => 'v1'], function () {
+        Route::get('users', fn () => User::all());
+    });
+});
