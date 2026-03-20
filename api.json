@@ -1,25 +1,74 @@
 {
     "openapi": "3.1.0",
     "info": {
-        "title": "COMP3385 API Demo",
-        "version": "0.0.1"
+        "title": "Demo API Docs",
+        "version": "1.0.0",
+        "description": "A Demo API for COMP3385"
     },
     "servers": [
         {
-            "url": "http:\/\/localhost\/api"
+            "url": "http://localhost:8000/api"
+        }
+    ],
+    "security": [
+        {
+            "http": []
         }
     ],
     "paths": {
-        "\/login": {
-            "post": {
+        "/user": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "`User`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/login": {
+            "get": {
                 "operationId": "login",
+                "responses": {
+                    "401": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "const": "Token invalid or missing."
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "operationId": "auth.login",
                 "tags": [
                     "Auth"
                 ],
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application\/json": {
+                        "application/json": {
                             "schema": {
                                 "type": "object",
                                 "properties": {
@@ -43,13 +92,13 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
                                         "status": {
                                             "type": "string",
-                                            "example": "success"
+                                            "const": "success"
                                         },
                                         "user": {
                                             "type": "string"
@@ -62,7 +111,7 @@
                                                 },
                                                 "type": {
                                                     "type": "string",
-                                                    "example": "bearer"
+                                                    "const": "bearer"
                                                 }
                                             },
                                             "required": [
@@ -83,17 +132,17 @@
                     "401": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
                                         "status": {
                                             "type": "string",
-                                            "example": "error"
+                                            "const": "error"
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthorized"
+                                            "const": "Unauthorized"
                                         }
                                     },
                                     "required": [
@@ -105,14 +154,124 @@
                         }
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
+                        "$ref": "#/components/responses/ValidationException"
                     }
                 }
             }
         },
-        "\/generate-token": {
+        "/v1/users": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/User"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/register": {
             "post": {
-                "operationId": "generate-token",
+                "operationId": "auth.register",
+                "tags": [
+                    "Auth"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "maxLength": 255
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "minLength": 6
+                                    }
+                                },
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "const": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "const": "User created successfully"
+                                        },
+                                        "user": {
+                                            "$ref": "#/components/schemas/User"
+                                        },
+                                        "authorisation": {
+                                            "type": "object",
+                                            "properties": {
+                                                "token": {
+                                                    "type": "string"
+                                                },
+                                                "type": {
+                                                    "type": "string",
+                                                    "const": "bearer"
+                                                }
+                                            },
+                                            "required": [
+                                                "token",
+                                                "type"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "status",
+                                        "message",
+                                        "user",
+                                        "authorisation"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/logout": {
+            "post": {
+                "operationId": "auth.logout",
                 "tags": [
                     "Auth"
                 ],
@@ -120,25 +279,285 @@
                     "200": {
                         "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
-                                        "token": {
-                                            "type": "string"
+                                        "status": {
+                                            "type": "string",
+                                            "const": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "const": "Successfully logged out"
                                         }
                                     },
                                     "required": [
-                                        "token"
+                                        "status",
+                                        "message"
                                     ]
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         },
-        "\/v1\/events": {
+        "/refresh": {
+            "post": {
+                "operationId": "auth.refresh",
+                "tags": [
+                    "Auth"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "const": "success"
+                                        },
+                                        "user": {
+                                            "type": "string"
+                                        },
+                                        "authorisation": {
+                                            "type": "object",
+                                            "properties": {
+                                                "token": {
+                                                    "type": "string"
+                                                },
+                                                "type": {
+                                                    "type": "string",
+                                                    "const": "bearer"
+                                                }
+                                            },
+                                            "required": [
+                                                "token",
+                                                "type"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "status",
+                                        "user",
+                                        "authorisation"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/token-with-claims": {
+            "post": {
+                "operationId": "auth.tokenWithClaims",
+                "summary": "Demonstrates JWT custom claims \u2014 extra data embedded directly in the token payload.\nUseful for encoding roles, permissions, or other data the API needs without a DB lookup",
+                "tags": [
+                    "Auth"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "const": "success"
+                                        },
+                                        "user": {
+                                            "type": "string"
+                                        },
+                                        "authorisation": {
+                                            "type": "object",
+                                            "properties": {
+                                                "token": {
+                                                    "type": "string"
+                                                },
+                                                "type": {
+                                                    "type": "string",
+                                                    "const": "bearer"
+                                                }
+                                            },
+                                            "required": [
+                                                "token",
+                                                "type"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "status",
+                                        "user",
+                                        "authorisation"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/sanctum/login": {
+            "post": {
+                "operationId": "auth.sanctumLogin",
+                "tags": [
+                    "Auth"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "email",
+                                    "password"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "const": "success"
+                                        },
+                                        "user": {
+                                            "anyOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/User"
+                                                },
+                                                {
+                                                    "type": "null"
+                                                }
+                                            ]
+                                        },
+                                        "authorisation": {
+                                            "type": "object",
+                                            "properties": {
+                                                "token": {
+                                                    "type": "string"
+                                                },
+                                                "type": {
+                                                    "type": "string",
+                                                    "const": "bearer"
+                                                }
+                                            },
+                                            "required": [
+                                                "token",
+                                                "type"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "status",
+                                        "user",
+                                        "authorisation"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "const": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "const": "Unauthorized"
+                                        }
+                                    },
+                                    "required": [
+                                        "status",
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/sanctum/logout": {
+            "post": {
+                "operationId": "auth.sanctumLogout",
+                "tags": [
+                    "Auth"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "const": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "const": "Successfully logged out"
+                                        }
+                                    },
+                                    "required": [
+                                        "status",
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/v1/events": {
             "get": {
                 "operationId": "event.index",
                 "tags": [
@@ -146,17 +565,17 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "`EventCollection`",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
-                                    "type": "string"
+                                    "$ref": "#/components/schemas/EventCollection"
                                 }
                             }
                         }
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             },
@@ -168,50 +587,42 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application\/json": {
+                        "application/json": {
                             "schema": {
-                                "$ref": "#\/components\/schemas\/EventRequest"
+                                "$ref": "#/components/schemas/EventRequest"
                             }
                         }
                     }
                 },
                 "responses": {
                     "201": {
-                        "description": "",
+                        "description": "`EventResource`",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Event created successfully"
-                                        },
-                                        "event": {
-                                            "type": "string"
+                                        "data": {
+                                            "$ref": "#/components/schemas/EventResource"
                                         }
                                     },
                                     "required": [
-                                        "message",
-                                        "event"
+                                        "data"
                                     ]
                                 }
                             }
                         }
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
-                    },
-                    "403": {
-                        "$ref": "#\/components\/responses\/AuthorizationException"
+                        "$ref": "#/components/responses/ValidationException"
                     }
                 }
             }
         },
-        "\/v1\/events\/{id}": {
+        "/v1/events/{id}": {
             "get": {
                 "operationId": "event.show",
                 "tags": [
@@ -229,25 +640,25 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "`EventResource`",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
-                                        "event": {
-                                            "type": "string"
+                                        "data": {
+                                            "$ref": "#/components/schemas/EventResource"
                                         }
                                     },
                                     "required": [
-                                        "event"
+                                        "data"
                                     ]
                                 }
                             }
                         }
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             },
@@ -269,45 +680,37 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application\/json": {
+                        "application/json": {
                             "schema": {
-                                "$ref": "#\/components\/schemas\/EventRequest"
+                                "$ref": "#/components/schemas/EventRequest"
                             }
                         }
                     }
                 },
                 "responses": {
                     "200": {
-                        "description": "",
+                        "description": "`EventResource`",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Event updated successfully"
-                                        },
-                                        "event": {
-                                            "type": "string"
+                                        "data": {
+                                            "$ref": "#/components/schemas/EventResource"
                                         }
                                     },
                                     "required": [
-                                        "message",
-                                        "event"
+                                        "data"
                                     ]
                                 }
                             }
                         }
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     },
                     "422": {
-                        "$ref": "#\/components\/responses\/ValidationException"
-                    },
-                    "403": {
-                        "$ref": "#\/components\/responses\/AuthorizationException"
+                        "$ref": "#/components/responses/ValidationException"
                     }
                 }
             },
@@ -327,16 +730,16 @@
                     }
                 ],
                 "responses": {
-                    "204": {
-                        "description": "No content",
+                    "200": {
+                        "description": "",
                         "content": {
-                            "application\/json": {
+                            "application/json": {
                                 "schema": {
                                     "type": "object",
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Event deleted successfully"
+                                            "const": "Event deleted successfully"
                                         }
                                     },
                                     "required": [
@@ -347,14 +750,35 @@
                         }
                     },
                     "401": {
-                        "$ref": "#\/components\/responses\/AuthenticationException"
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
         }
     },
     "components": {
+        "securitySchemes": {
+            "http": {
+                "type": "http",
+                "scheme": "bearer"
+            }
+        },
         "schemas": {
+            "EventCollection": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "required": [
+                    "data"
+                ],
+                "title": "EventCollection"
+            },
             "EventRequest": {
                 "type": "object",
                 "properties": {
@@ -406,13 +830,128 @@
                     "ends_at"
                 ],
                 "title": "EventRequest"
+            },
+            "EventResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "location": {
+                        "type": "string"
+                    },
+                    "tickets_available": {
+                        "type": "integer"
+                    },
+                    "price": {
+                        "type": "string"
+                    },
+                    "registration_starts_at": {
+                        "type": "string"
+                    },
+                    "registration_ends_at": {
+                        "type": "string"
+                    },
+                    "starts_at": {
+                        "type": "string"
+                    },
+                    "ends_at": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "name",
+                    "description",
+                    "status",
+                    "location",
+                    "tickets_available",
+                    "price",
+                    "registration_starts_at",
+                    "registration_ends_at",
+                    "starts_at",
+                    "ends_at"
+                ],
+                "title": "EventResource"
+            },
+            "User": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "email_verified_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "created_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "name",
+                    "email",
+                    "email_verified_at",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "User"
             }
         },
         "responses": {
+            "AuthenticationException": {
+                "description": "Unauthenticated",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string",
+                                    "description": "Error overview."
+                                }
+                            },
+                            "required": [
+                                "message"
+                            ]
+                        }
+                    }
+                }
+            },
             "ValidationException": {
                 "description": "Validation error",
                 "content": {
-                    "application\/json": {
+                    "application/json": {
                         "schema": {
                             "type": "object",
                             "properties": {
@@ -434,44 +973,6 @@
                             "required": [
                                 "message",
                                 "errors"
-                            ]
-                        }
-                    }
-                }
-            },
-            "AuthenticationException": {
-                "description": "Unauthenticated",
-                "content": {
-                    "application\/json": {
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "message": {
-                                    "type": "string",
-                                    "description": "Error overview."
-                                }
-                            },
-                            "required": [
-                                "message"
-                            ]
-                        }
-                    }
-                }
-            },
-            "AuthorizationException": {
-                "description": "Authorization error",
-                "content": {
-                    "application\/json": {
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "message": {
-                                    "type": "string",
-                                    "description": "Error overview."
-                                }
-                            },
-                            "required": [
-                                "message"
                             ]
                         }
                     }
