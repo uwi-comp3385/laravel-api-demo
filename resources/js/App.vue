@@ -26,9 +26,7 @@ onMounted(async () => {
 </script>
 
 <template>
-    <h1>My Demo Vue Page</h1>
     <Welcome :fullname="fullname" />
-    <hr>
     <Events />
 </template>
 
