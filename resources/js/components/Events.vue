@@ -16,7 +16,7 @@ onMounted(() => {
         .then((response) => response.json())
         .then((data) => {
             console.log(data);
-            events.value = data;
+            events.value = data.data;
         });
 });
 </script>
